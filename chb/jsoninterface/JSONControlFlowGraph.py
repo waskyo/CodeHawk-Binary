@@ -91,8 +91,8 @@ class JSONCfgEdge(JSONObject):
 
     def accept(self, visitor: "JSONObjectVisitor") -> None:
         visitor.visit_cfg_edge(self)
-        
-    
+
+
 class JSONControlFlowGraph(JSONObject):
 
     def __init__(self, d: Dict[str, Any]) -> None:
@@ -132,6 +132,3 @@ class JSONControlFlowGraph(JSONObject):
 
     def accept(self, visitor: "JSONObjectVisitor") -> None:
         visitor.visit_control_flow_graph(self)
-    
-
-    
