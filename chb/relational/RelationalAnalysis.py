@@ -270,8 +270,9 @@ class RelationalAnalysis:
                 else:
                     return JSONResult("appcomparison", {}, "fail", fra.reason)
             else:
-                return JSONResult(
-                    "appcomparison", {}, "fail",
-                    "encountered a function not analyzed that changed: " + faddr)
+                continue
+                #return JSONResult(
+                    #"appcomparison", {}, "fail",
+                    #"encountered a function not analyzed that changed: " + faddr)
         content["app-md5-comparison"] = self.md5_comparison_to_json_result().content
         return JSONResult("appcomparison", content, "ok")
