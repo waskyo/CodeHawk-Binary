@@ -47,7 +47,7 @@ def getLocals(config: 'Config') -> None:
     # Example :
     config.chx86_analyze =  '/home/username/my-analyzer/chx86_analyze'
     config.chx86_gui =  '/home/username/my-analyzer/chx86_gui
-    config.summaries = '/home/username/my-analyzer/bchsummaries.jar'
+    config.summaries = '/home/username/my-analyzer/bchsummaries.zip'
 
     # Set locations of analysis targets
     homedir = os.path.expanduser('~')

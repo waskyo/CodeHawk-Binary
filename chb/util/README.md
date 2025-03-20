@@ -14,7 +14,7 @@ which should print out something like:
 Analyzer configuration:
 -----------------------
   analyzer : /Users/henny/gitrepo/codehawk/CodeHawk/CHB/bchcmdline/chx86_analyze (found)
-  summaries: /Users/henny/repo/CodeHawk/CHB/bchsummaries/bchsummaries.jar (found)
+  summaries: /Users/henny/repo/CodeHawk/CHB/bchsummaries/bchsummaries.zip (found)
 
 Analysis target index files:
 ----------------------------

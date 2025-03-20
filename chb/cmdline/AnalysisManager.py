@@ -88,7 +88,7 @@ class AnalysisManager(object):
         Arguments:
         - path: path of the directory that holds the target executable
         - filename: filename of the target executable
-        - deps: list of summary jars
+        - deps: list of summary zips
         - hints: Dictionary with items to add to the userdata file
         - elf/mips/arm: modifiers (default is x86 PE)
         """
@@ -449,7 +449,7 @@ class AnalysisManager(object):
             preamble_cutoff: int = 12) -> int:
         cwd = os.getcwd()
         os.chdir(self.path)   # temporary change in directory
-        functionsjarfile = UF.get_functionsjar_filename(self.path, self.filename)
+        functionszipfile = UF.get_functionszip_filename(self.path, self.filename)
         analysisdir = UF.get_analysis_dir(self.path, self.filename)
         cmd = [self.chx86_analyze, "-summaries", self.chsummaries]
         cmd.extend(["-preamble_cutoff", str(preamble_cutoff)])
@@ -502,7 +502,7 @@ class AnalysisManager(object):
             cmd.append("-arm_extension_registers")
 
         cmd.extend(["-analyze", self.filename])
-        jarcmd = ["jar", "cf",  functionsjarfile, "-C", analysisdir, "functions"]
+        zipcmd = ["zip", functionszipfile, "functions"]
         print_progress_update("Analyzing "
               + self.filename
               + " (max "
@@ -535,8 +535,8 @@ class AnalysisManager(object):
                 or (count > iterations))
 
             if isfinished:
-                chklogger.logger.debug("execute command %s", " ".join(jarcmd))
-                subprocess.call(jarcmd, stderr=subprocess.STDOUT)
+                chklogger.logger.debug("execute command %s", " ".join(zipcmd))
+                subprocess.call(zipcmd, stderr=subprocess.STDOUT, cwd=analysisdir)
                 fincmd = cmd + ["-collectdata"]
                 if self.use_ssa:
                     fincmd = fincmd + ["-ssa"]
@@ -544,8 +544,8 @@ class AnalysisManager(object):
                     fincmd = fincmd + ["-no_varinvs"]
                 chklogger.logger.debug("execute command %s", " ".join(fincmd))
                 result = self._call_analysis(fincmd, timeout=timeout)
-                chklogger.logger.debug("execute command %s", " ".join(jarcmd))
-                subprocess.call(jarcmd, stderr=subprocess.STDOUT)
+                chklogger.logger.debug("execute command %s", " ".join(zipcmd))
+                subprocess.call(zipcmd, stderr=subprocess.STDOUT, cwd=analysisdir)
                 count += 1
                 (stable, results, r_update) = self._get_results()
                 print_progress_update(r_update + "  " + self.filename)
@@ -555,8 +555,8 @@ class AnalysisManager(object):
                 print("\n".join(lines))
                 return isstable == "yes"
 
-            chklogger.logger.debug("execute command %s", " ".join(jarcmd))
-            subprocess.call(jarcmd, stderr=subprocess.STDOUT)
+            chklogger.logger.debug("execute command %s", " ".join(zipcmd))
+            subprocess.call(zipcmd, stderr=subprocess.STDOUT)
             result = self._call_analysis(cmd, timeout=timeout)
             if result != 0:
                 chklogger.logger.debug("return cwd %s", cwd)

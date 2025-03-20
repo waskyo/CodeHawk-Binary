@@ -20,8 +20,7 @@ development and thus somewhat experimental.
 
 ### Requirements
 
-The command-line interface requires python3.5 or higher. The analyzer
-requires a Java runtime environment.
+The command-line interface requires python3.5 or higher.
 
 Build instructions for the CodeHawk Binary Analyzer are available
 [here](https://github.com/static-analysis-engineering/codehawk/tree/master/CodeHawk).
@@ -34,7 +33,7 @@ with
 Analyzer configuration:
 -----------------------
   analyzer : /home/myname/codehawk/CodeHawk/CHB/bchcmdline/chx86_analyze (found)
-  summaries: /home/myname/codehawk/CodeHawk/CHB/bchsummaries/bchsummaries.jar (found)
+  summaries: /home/myname/codehawk/CodeHawk/CHB/bchsummaries/bchsummaries.zip (found)
 ```
 
 and check whether it works correctly by running some tests:
