@@ -28,6 +28,7 @@
 """Support functions for the command-line interpreter."""
 
 import argparse
+from collections import defaultdict
 import json
 
 from typing import (
@@ -51,8 +52,8 @@ from chb.app.Instruction import Instruction
 from chb.arm.ARMInstruction import ARMInstruction
 
 from chb.bctypes.BCAttrParam import BCAttrParamInt, BCAttrParamStr, BCAttrParamCons
-
-from chb.buffer.LibraryCallCallsites import LibraryCallCallsites
+from chb.bctypes.BCAttribute import BCAttribute
+from chb.buffer.LibraryCallCallsites import LibraryCallCallsites, LibraryCallSideeffect
 
 import chb.cmdline.commandutil as UC
 import chb.cmdline.jsonresultutil as JU
@@ -1218,6 +1219,49 @@ def collect_known_fn_addrs(app: "AppAccess", patchcallsites: list) -> dict:
 
     return function_addr
 
+def compare_function_attribute(attr: BCAttribute, instr: Instruction, pc: LibraryCallSideeffect, dstarg_index: int) -> Optional[Tuple[int, int]]:
+    # Locate attribute corresponding to the library function being analyzed.
+    if attr.name == 'chk_flows_to_argument':
+        function_param = cast(BCAttrParamInt, attr.params[0]).intvalue
+        callsite_iaddr = cast(BCAttrParamInt, attr.params[1]).intvalue
+        callsite_tgt = cast(BCAttrParamCons, attr.params[2]).name
+        callsite_param = cast(BCAttrParamInt, attr.params[3]).intvalue
+        access_type = cast(BCAttrParamCons, attr.params[4]).name
+        # Compare the annotation with the callsite address/target/parameter.
+        # Note: We add 1 to the index due to differing 0/1-indexing.
+        if callsite_iaddr == int(instr.iaddr, 16) and \
+           callsite_tgt == pc.summary.name and \
+           function_param == dstarg_index + 1 and \
+           access_type in ['read_write', 'write_only']:
+            return (function_param, callsite_param)
+    return None
+
+def find_function_attribute(app: "AppAccess", dstarg_index: int, fname: str, instr: Instruction, pc: LibraryCallSideeffect) -> Optional[Tuple[int, int]]:
+    varinfo_index = None
+    for index, v in app.bcdictionary.varinfo_table.items():
+        if v.tags[0] == fname:
+            varinfo_index = index
+    if varinfo_index is None:
+        chklogger.logger.warning("No varinfo found for: %s", fname)
+        return None
+
+    try:
+        attrs = app.bcdictionary.varinfo(varinfo_index).attributes
+    except Exception:
+        chklogger.logger.exception("No attributes found for: %s", fname)
+        return None
+
+    if attrs is None:
+        return None
+
+    intermediate_attribute: Optional[Tuple[int, int]] = None
+    for attr in attrs.attrs:
+        attr_result = compare_function_attribute(attr, instr, pc, dstarg_index)
+        if attr_result:
+            intermediate_attribute = attr_result
+
+    return intermediate_attribute
+
 def calculate_buffer_size(stackframe: "FunctionStackframe",
                           stack_offset: int,
                           instr: "Instruction") -> tuple[Optional[int], str]:
@@ -1319,7 +1363,11 @@ def report_patch_candidates(args: argparse.Namespace) -> NoReturn:
             return True
         return target.name in xtargets
 
-    intermediate_callgraph: Dict[str,List[tuple[str,"Function","Instruction"]]] = {}
+    # For every call to another application function (non-library), we track
+    # the caller (function name, pointer to the Function object, and instruction object
+    # with the call). This is used later to track all callers to the intermediate
+    # function containing a vulnerable patch site.
+    intermediate_callgraph: Dict[str,List[tuple[str,"Function","Instruction"]]] = defaultdict(list)
 
     for (faddr, blocks) in app.call_instructions().items():
         for (baddr, instrs) in blocks.items():
@@ -1330,8 +1378,6 @@ def report_patch_candidates(args: argparse.Namespace) -> NoReturn:
                     if calltgt.is_so_target:
                         libcalls.add_library_callsite(faddr, baddr, instr)
                     elif calltgt.is_app_target:
-                        if calltgt.name not in intermediate_callgraph:
-                            intermediate_callgraph[calltgt.name] = []
                         func = app.function(faddr)
                         fname = func.name.replace('0x', 'sub_')
                         intermediate_callgraph[calltgt.name].append((fname, func, instr))
@@ -1353,61 +1399,42 @@ def report_patch_candidates(args: argparse.Namespace) -> NoReturn:
     patch_records = []
 
     for pc in sorted(patchcallsites, key=lambda pc:pc.faddr):
+        fn = app.function(pc.faddr)
         instr = pc.instr
         dstarg = pc.dstarg
-        if pc.dsttype == "function-argument" and dstarg is not None and dstarg.is_argument_value:
-            fname = app.function(pc.faddr).name.replace('0x', 'sub_')
-            dstarg_index = dstarg.argument_index()
-            varinfo_index = None
-            for index, v in app.bcdictionary.varinfo_table.items():
-                if v.tags[0] == fname:
-                    varinfo_index = index
-            if varinfo_index is None:
-                chklogger.logger.warning("No varinfo found for: %s", fname)
-                continue
-            attrs = None
-            try:
-                attrs = app.bcdictionary.varinfo(varinfo_index).attributes
-            except:
-                chklogger.logger.warning("No attributes found for: %s", fname)
-                continue
 
-            if attrs is None:
-                continue
+        basicblock = fn.block(pc.baddr)
+        spare = find_spare_instruction(basicblock, instr.iaddr)
 
-            intermediate_attribute = None
-            for attr in attrs.attrs:
-                if attr.name == 'chk_flows_to_argument':
-                    function_param = cast(BCAttrParamInt, attr.params[0]).intvalue
-                    callsite_iaddr = cast(BCAttrParamInt, attr.params[1]).intvalue
-                    callsite_tgt = cast(BCAttrParamCons, attr.params[2]).name
-                    callsite_param = cast(BCAttrParamInt, attr.params[3]).intvalue
-                    access_type = cast(BCAttrParamCons, attr.params[4]).name
-                    if callsite_iaddr == int(instr.iaddr, 16) and \
-                       callsite_tgt == pc.summary.name and \
-                       function_param == dstarg_index + 1 and \
-                       access_type in ['read_write', 'write_only']:
-                        intermediate_attribute = (function_param, callsite_param)
+        if dstarg is None:
+            chklogger.logger.warning(
+                "No expression found for destination argument: %s",
+                str(instr))
+            continue
 
-            if not intermediate_attribute:
-                continue
-
+        if pc.dsttype == "function-argument" and dstarg.is_argument_value:
+            # Convert function name fields from hex to sub_XXX to check against calltarget names.
+            fname = fn.name.replace('0x', 'sub_')
             if not fname in intermediate_callgraph:
                 continue
+
+            # Lookup function attribute corresponding to this library call.
+            dstarg_index = dstarg.argument_index()
+            intermediate_attribute = find_function_attribute(app, dstarg_index, fname, instr, pc)
+            if intermediate_attribute is None:
+                continue
+
             for inter in intermediate_callgraph[fname]:
+                # For each caller to the intermediate function, lookup the corresponding buffer
+                # and add it to the patch records.
                 inter_fname, inter_func, inter_instr = inter
                 argument = inter_instr.call_arguments[dstarg_index]
                 stackframe = inter_func.stackframe
-                stackslot = stackframe.stackslot(argument.stack_address_offset())
                 dstoffset = argument.stack_address_offset()
                 buffersize, sizeorigin = calculate_buffer_size(stackframe, dstoffset, instr)
                 if buffersize is None:
                     continue
                 sizeorigin = "intermediate-" + sizeorigin
-
-                fn = app.function(pc.faddr)
-                basicblock = fn.block(pc.baddr)
-                spare = find_spare_instruction(basicblock, instr.iaddr)
 
                 jresult = pc.to_json_result(dstoffset, buffersize, sizeorigin, spare, inter_instr.iaddr)
                 if not jresult.is_ok:
@@ -1416,21 +1443,13 @@ def report_patch_candidates(args: argparse.Namespace) -> NoReturn:
 
                 patch_records.append(jresult.content)
             continue
-        if dstarg is None:
-            chklogger.logger.warning(
-                "No expression found for destination argument: %s",
-                str(instr))
-            continue
-        dstoffset = dstarg.stack_address_offset()
-        fn = app.function(pc.faddr)
+
         stackframe = fn.stackframe
-        stackslot = stackframe.stackslot(dstoffset)
+        dstoffset = dstarg.stack_address_offset()
         buffersize, sizeorigin = calculate_buffer_size(stackframe, dstoffset, instr)
         if buffersize is None:
             continue
 
-        basicblock = fn.block(pc.baddr)
-        spare = find_spare_instruction(basicblock, instr.iaddr)
 
         jresult = pc.to_json_result(dstoffset, buffersize, sizeorigin, spare, None)
         if not jresult.is_ok:
