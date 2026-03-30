@@ -1223,13 +1223,13 @@ def compare_function_attribute(attr: BCAttribute, instr: Instruction, pc: Librar
     # Locate attribute corresponding to the library function being analyzed.
     if attr.name == 'chk_flows_to_argument':
         function_param = cast(BCAttrParamInt, attr.params[0]).intvalue
-        callsite_iaddr = cast(BCAttrParamInt, attr.params[1]).intvalue
-        callsite_tgt = cast(BCAttrParamCons, attr.params[2]).name
+        callsite_iaddr = cast(BCAttrParamStr, attr.params[1]).strvalue
+        callsite_tgt = cast(BCAttrParamStr, attr.params[2]).strvalue
         callsite_param = cast(BCAttrParamInt, attr.params[3]).intvalue
         access_type = cast(BCAttrParamCons, attr.params[4]).name
         # Compare the annotation with the callsite address/target/parameter.
         # Note: We add 1 to the index due to differing 0/1-indexing.
-        if callsite_iaddr == int(instr.iaddr, 16) and \
+        if callsite_iaddr == instr.iaddr and \
            callsite_tgt == pc.summary.name and \
            function_param == dstarg_index + 1 and \
            access_type in ['read_write', 'write_only']:
