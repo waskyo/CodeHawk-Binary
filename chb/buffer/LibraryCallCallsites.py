@@ -25,7 +25,7 @@
 # SOFTWARE.
 # ------------------------------------------------------------------------------
 
-from typing import Any, cast, Dict, List, Optional, TYPE_CHECKING
+from typing import Any, cast, Dict, List, Optional, Tuple, TYPE_CHECKING
 
 from chb.invariants.XConstant import XIntConst
 from chb.invariants.XNumerical import XNumerical
@@ -257,7 +257,7 @@ class LibraryCallSideeffect:
                        buffersize: int,
                        sizeorigin: str,
                        spare: Optional[str],
-                       intermediateinstr: Optional[str],
+                       intermediate: Optional[Tuple[str, str]],
                       ) -> JSONResult:
         if self.dstarg is None:
             chklogger.logger.warning(
@@ -278,8 +278,9 @@ class LibraryCallSideeffect:
         else:
             content["length-argument"] = None
         content["spare"] = spare
-        if intermediateinstr:
-            content['intermediate-iaddr'] = intermediateinstr
+        if intermediate:
+            content['intermediate-faddr'] = intermediate[0]
+            content['intermediate-iaddr'] = intermediate[1]
 
         return JSONResult("librarycallsideeffect", content, "ok")
 

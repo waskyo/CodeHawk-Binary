@@ -1436,7 +1436,12 @@ def report_patch_candidates(args: argparse.Namespace) -> NoReturn:
                     continue
                 sizeorigin = "intermediate-" + sizeorigin
 
-                jresult = pc.to_json_result(dstoffset, buffersize, sizeorigin, spare, inter_instr.iaddr)
+                intermediate = (inter_func.faddr, inter_instr.iaddr)
+                jresult = pc.to_json_result(dstoffset,
+                                            buffersize,
+                                            sizeorigin,
+                                            spare,
+                                            intermediate)
                 if not jresult.is_ok:
                     chklogger.logger.warning("Couldn't process patch callsite %s", pc)
                     continue
