@@ -1199,14 +1199,18 @@ def relational_compare_cfg_info(args: argparse.Namespace) -> NoReturn:
     cfginfos1 = cfginfo1.cfg_infos
     cfginfos2 = cfginfo2.cfg_infos
 
-    print("app1: " + str(len(cfginfos1)))
-    print("app2: " + str(len(cfginfos2)))
+    print("App1: %d functions" % len(cfginfos1))
+    print("App2: %d functions" % len(cfginfos2))
 
-    cfginfos2 = [x for x in cfginfos2 if x.faddr not in newfunctions]
+    notnew_cfginfos2 = [x for x in cfginfos2 if x.faddr not in newfunctions]
+    print("After: %d" % len(cfginfos2))
 
-    cfginfos2 = cfginfos2[:len(cfginfos1)]
+    cfginfos2 = notnew_cfginfos2[:len(cfginfos1)]
 
     diffcount = 0
+
+    print("\n%s   %s   %s   %s   fn name" %
+          ("f1".ljust(10), "f2".ljust(10), "+/-".rjust(5), "cfgdiff".ljust(30)))
 
     for (ci1, ci2) in zip(cfginfos1, cfginfos2):
         if (
@@ -1235,11 +1239,17 @@ def relational_compare_cfg_info(args: argparse.Namespace) -> NoReturn:
         else:
             name = ""
 
-        print(ci1.faddr + "   " + ci2.faddr + "   " +
-              str(ci2.faddr_i - ci1.faddr_i).rjust(4) + "  " + cfgdiff.ljust(24)
-              + name)
+        print(ci1.faddr.ljust(10) + "   " + \
+              ci2.faddr.ljust(10) + "   " + \
+              str(ci2.faddr_i - ci1.faddr_i).rjust(5) + "   " + \
+              cfgdiff.ljust(30) + "   " + \
+              name)
 
     print("\nNumber of functions different: " + str(diffcount))
+
+    print("\nNew functions:")
+    for ci2 in notnew_cfginfos2[len(cfginfos1):]:
+        print(ci2.faddr)
 
     exit(0)
 
