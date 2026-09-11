@@ -90,7 +90,7 @@ from chb.util.loggingutil import chklogger
 
 if TYPE_CHECKING:
     from chb.api.FormatStringSpec import FormatStringSpec
-    from chb.app.AppAccess import AppAccess
+    from chb.app.AppAccess import AppAccess, HeaderTy
     from chb.app.FunctionStackframe import FunctionStackframe
     from chb.app.GlobalMemoryMap import (
         GlobalMemoryMap, GlobalLocation, GlobalReference)
@@ -137,7 +137,7 @@ class Function(ABC):
         return self._filename
 
     @property
-    def app(self) -> "AppAccess":
+    def app(self) -> "AppAccess[HeaderTy]":
         return self.ixd.app
 
     @property

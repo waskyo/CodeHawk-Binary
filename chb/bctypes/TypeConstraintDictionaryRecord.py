@@ -32,7 +32,7 @@ import chb.util.fileutil as UF
 import chb.util.IndexedTable as IT
 
 if TYPE_CHECKING:
-    from chb.app.AppAccess import AppAccess
+    from chb.app.AppAccess import AppAccess, HeaderTy
     from chb.app.BDictionary import BDictionary
     from chb.bctypes.TypeConstraintDictionary import TypeConstraintDictionary
 
@@ -55,7 +55,7 @@ class TypeConstraintDictionaryRecord(IT.IndexedTableValue):
         return self.tcd.bdictionary
 
     @property
-    def app(self) -> "AppAccess":
+    def app(self) -> "AppAccess[HeaderTy]":
         return self.tcd.app
 
 

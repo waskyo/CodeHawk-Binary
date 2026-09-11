@@ -41,7 +41,7 @@ from chb.arm.ARMInstruction import ARMInstruction
 from chb.invariants.XXpr import XXpr
 
 if TYPE_CHECKING:
-    from chb.app.AppAccess import AppAccess
+    from chb.app.AppAccess import AppAccess, HeaderTy
     from chb.arm.ARMFunction import ARMFunction
 
 
@@ -57,7 +57,7 @@ class ARMBlock(BasicBlock):
         return self._armf
 
     @property
-    def app(self) -> "AppAccess":
+    def app(self) -> "AppAccess[HeaderTy]":
         return self.armfunction.app
 
     @property
