@@ -33,7 +33,7 @@ import chb.util.fileutil as UF
 from chb.util.loggingutil import chklogger
 
 if TYPE_CHECKING:
-    from chb.app.AppAccess import AppAccess
+    from chb.app.AppAccess import AppAccess, HeaderTy
     from chb.app.Function import Function
     from chb.app.Instruction import Instruction
     from chb.bctypes.BCDictionary import BCDictionary
@@ -63,7 +63,7 @@ class GlobalReference:
         return self._gloc.mmap
 
     @property
-    def app(self) -> "AppAccess":
+    def app(self) -> "AppAccess[HeaderTy]":
         return self.mmap.app
 
     @property

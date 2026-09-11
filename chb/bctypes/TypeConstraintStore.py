@@ -33,7 +33,7 @@ import chb.bctypes.TypeConstraint as TC
 import chb.util.fileutil as UF
 
 if TYPE_CHECKING:
-    from chb.app.AppAccess import AppAccess
+    from chb.app.AppAccess import AppAccess, HeaderTy
 
 
 class RegisterParamConstraints:
@@ -245,7 +245,7 @@ class TypingRule:
         return self._tcstore
 
     @property
-    def app(self) -> "AppAccess":
+    def app(self) -> "AppAccess[HeaderTy]":
         return self.tcstore.app
 
     @property

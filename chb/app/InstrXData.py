@@ -54,7 +54,7 @@ from chb.util.IndexedTable import IndexedTableValue
 if TYPE_CHECKING:
     from chb.api.CallTarget import CallTarget
     from chb.api.InterfaceDictionary import InterfaceDictionary
-    from chb.app.AppAccess import AppAccess
+    from chb.app.AppAccess import AppAccess, HeaderTy
     from chb.app.Function import Function
     from chb.app.FunctionDictionary import FunctionDictionary
     from chb.invariants.FnVarDictionary import FnVarDictionary
@@ -98,7 +98,7 @@ class InstrXData(IndexedTableValue):
         return self.functiondictionary.function
 
     @property
-    def app(self) -> "AppAccess":
+    def app(self) -> "AppAccess[HeaderTy]":
         return self.function.app
 
     @property

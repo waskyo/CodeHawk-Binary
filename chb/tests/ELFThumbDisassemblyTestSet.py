@@ -52,7 +52,7 @@ class ELFThumbDisassemblyTestSet:
         pass
 
     def create_test(self, r) -> None:
-        files: Dict = {}
+        files: Dict[str, str] = {}
         name = r[0]
         tca = ELFARMTestCreator(name, r[1], suite="DT")
         elfheader = tca.create_elf_header()

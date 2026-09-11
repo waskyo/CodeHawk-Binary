@@ -75,7 +75,7 @@ if TYPE_CHECKING:
     from chb.api.CallTarget import (
         StubTarget, AppTarget, CallTarget)
     from chb.api.FunctionStub import SOFunction
-    from chb.app.AppAccess import AppAccess
+    from chb.app.AppAccess import AppAccess, HeaderTy
     from chb.app.BasicBlock import BasicBlock
     from chb.app.FnProofObligations import ProofObligation
     from chb.app.Function import Function
@@ -766,16 +766,16 @@ def report_proofobligations(args: argparse.Namespace) -> NoReturn:
     # fn_counts: faddr -> status_tag -> count
     fn_counts: Dict[str, Dict[str, int]] = {}
     # fn_open_pos: faddr -> iaddr -> list of open ProofObligations
-    fn_open_pos: Dict[str, Dict[str, List]] = {}
+    fn_open_pos: Dict[str, Dict[str, List['ProofObligation']]] = {}
     # fn_detail_pos: faddr -> iaddr -> list of safe/delegated ProofObligations
-    fn_detail_pos: Dict[str, Dict[str, List]] = {}
+    fn_detail_pos: Dict[str, Dict[str, List['ProofObligation']]] = {}
     # fn_labels: faddr -> display string
     fn_labels: Dict[str, str] = {}
 
     detail_statuses = {"dis", "local", "del"}
 
     # flat list of records for --json export
-    po_records: List[Dict] = []
+    po_records: List[Dict[str, Any]] = []
 
     for fn in app.functions.values():
         faddr = fn.faddr
@@ -1408,7 +1408,9 @@ def report_buffer_bounds(args: argparse.Namespace) -> NoReturn:
     exit(0)
 
 
-def collect_known_fn_addrs(app: "AppAccess", patchcallsites: list) -> dict:
+def collect_known_fn_addrs(app: "AppAccess[HeaderTy]",
+                           patchcallsites: list[LibraryCallSideeffect],
+                          ) -> dict[str, str]:
     function_addr: Dict[str, str] = {}
     def consider_pair(faddr: str, fname: Optional[str]):
         if fname and fname not in function_addr:

@@ -33,7 +33,7 @@ import chb.util.IndexedTable as IT
 
 if TYPE_CHECKING:
     from chb.api.InterfaceDictionary import InterfaceDictionary
-    from chb.app.AppAccess import AppAccess
+    from chb.app.AppAccess import AppAccess, HeaderTy
     from chb.app.BDictionary import BDictionary
     from chb.bctypes.BCDictionary import BCDictionary
     import chb.models.ModelsAccess
@@ -61,7 +61,7 @@ class InterfaceDictionaryRecord(IT.IndexedTableValue):
         return self.id.bcdictionary
 
     @property
-    def app(self) -> "AppAccess":
+    def app(self) -> "AppAccess[HeaderTy]":
         return self.id.app
 
     @property

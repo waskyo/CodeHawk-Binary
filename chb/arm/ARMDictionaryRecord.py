@@ -34,7 +34,7 @@ from chb.util.IndexedTable import IndexedTableValue
 
 if TYPE_CHECKING:
     from chb.api.InterfaceDictionary import InterfaceDictionary
-    from chb.app.AppAccess import AppAccess
+    from chb.app.AppAccess import AppAccess, HeaderTy
     from chb.app.BDictionary import BDictionary
     from chb.arm.ARMDictionary import ARMDictionary
 
@@ -50,7 +50,7 @@ class ARMDictionaryRecord(IndexedTableValue):
         return self._armd
 
     @property
-    def app(self) -> "AppAccess":
+    def app(self) -> "AppAccess[HeaderTy]":
         return self.armd.app
 
     @property

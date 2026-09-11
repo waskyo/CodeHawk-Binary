@@ -59,7 +59,7 @@ from chb.jsoninterface.JSONResult import JSONResult
 import chb.util.fileutil as UF
 
 if TYPE_CHECKING:
-    from chb.app.AppAccess import AppAccess
+    from chb.app.AppAccess import AppAccess, HeaderTy
     from chb.cmdline.PatchResults import PatchEvent
 
 
@@ -95,7 +95,7 @@ class ARMFunction(Function):
         return self._armd
 
     @property
-    def app(self) -> "AppAccess":
+    def app(self) -> "AppAccess[HeaderTy]":
         return self.armdictionary.app
 
     @property

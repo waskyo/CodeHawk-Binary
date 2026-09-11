@@ -61,7 +61,7 @@ from chb.util.loggingutil import chklogger
 
 
 if TYPE_CHECKING:
-    from chb.app.AppAccess import AppAccess
+    from chb.app.AppAccess import AppAccess, HeaderTy
     from chb.app.FnProofObligations import ProofObligation
     from chb.arm.ARMBlock import ARMBlock
     from chb.arm.ARMFunction import ARMFunction
@@ -91,7 +91,7 @@ class ARMInstruction(Instruction):
         return self.armblock.armdictionary
 
     @property
-    def app(self) -> "AppAccess":
+    def app(self) -> "AppAccess[HeaderTy]":
         return self.armfunction.app
 
     @property
