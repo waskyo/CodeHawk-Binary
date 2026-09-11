@@ -35,7 +35,7 @@ from chb.util.IndexedTable import IndexedTableValue
 
 if TYPE_CHECKING:
     from chb.api.InterfaceDictionary import InterfaceDictionary
-    import chb.app.AppAccess
+    from chb.app.AppAccess import AppAccess, HeaderTy
     from chb.app.BDictionary import BDictionary
     from chb.app.Function import Function
     from chb.app.FunctionInfo import FunctionInfo
@@ -74,7 +74,7 @@ class FnXprDictionaryRecord(IndexedTableValue):
         return self.vd.bd
 
     @property
-    def app(self) -> "chb.app.AppAccess.AppAccess":
+    def app(self) -> "AppAccess[HeaderTy]":
         return self.bd.app
 
     @property
@@ -93,7 +93,7 @@ class FnVarDictionaryRecord(IndexedTableValue):
         self._vd = vd
 
     @property
-    def vd(self) -> "chb.invariants.FnVarDictionary.FnVarDictionary":
+    def vd(self) -> "FnVarDictionary":
         return self._vd
 
     @property
@@ -238,7 +238,7 @@ class XprDictionaryRegistry:
 
     def mk_instance(
             self,
-            xd: "chb.invariants.FnXprDictionary.FnXprDictionary",
+            xd: "FnXprDictionary",
             ixval: IndexedTableValue,
             superclass: Type[XdR]) -> XdR:
         tag = ixval.tags[0]
@@ -270,7 +270,7 @@ class InvDictionaryRegistry:
 
     def mk_instance(
             self,
-            invd: "chb.invariants.FnInvDictionary.FnInvDictionary",
+            invd: "FnInvDictionary",
             ixval: IndexedTableValue,
             superclass: Type[IdR]) -> IdR:
         tag = ixval.tags[0]
@@ -302,7 +302,7 @@ class VarInvDictionaryRegistry:
 
     def mk_instance(
             self,
-            varinvd: "chb.invariants.FnVarInvDictionary.FnVarInvDictionary",
+            varinvd: "FnVarInvDictionary",
             ixval: IndexedTableValue,
             superclass: Type[VIdR]) -> VIdR:
         tag = ixval.tags[0]
