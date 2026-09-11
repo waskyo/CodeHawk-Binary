@@ -34,7 +34,7 @@ from chb.util.IndexedTable import IndexedTableValue
 
 if TYPE_CHECKING:
     from chb.api.InterfaceDictionary import InterfaceDictionary
-    from chb.app.AppAccess import AppAccess
+    from chb.app.AppAccess import AppAccess, HeaderTy
     from chb.app.BDictionary import BDictionary
     from chb.pwr.PowerDictionary import PowerDictionary
 
@@ -51,7 +51,7 @@ class PowerDictionaryRecord(IndexedTableValue):
         return self._pwrd
 
     @property
-    def app(self) -> "AppAccess":
+    def app(self) -> "AppAccess[HeaderTy]":
         return self.pwrd.app
 
     @property
