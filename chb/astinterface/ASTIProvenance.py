@@ -424,7 +424,6 @@ class ASTIProvenance:
     def resolve_reaching_defs(self) -> None:
         for (xid, rds) in self.expr_rdefs.items():
             for rd in rds:
-                rd = cast("ReachingDefFact", rd)
                 v = str(rd.variable)
                 if v == "PC":
                     continue
@@ -487,7 +486,6 @@ class ASTIProvenance:
     def resolve_flag_reaching_defs(self) -> None:
         for (xid, frds) in self.flag_expr_rdefs.items():
             for frd in frds:
-                frd = cast("FlagReachingDefFact", frd)
                 addrs = [str(d) for d in frd.deflocations]
                 for addr in addrs:
                     if addr in self.address_instructions:
@@ -500,7 +498,6 @@ class ASTIProvenance:
 
     def resolve_definitions_used(self) -> None:
         for (lvalid, defuse) in self.lval_defuses.items():
-            defuse = cast("DefUse", defuse)
             addrs = [str(u) for u in defuse.uselocations if str(u) != "exit"]
             for addr in addrs:
                 if addr in self.address_instructions:
@@ -513,7 +510,6 @@ class ASTIProvenance:
 
     def resolve_definitions_used_high(self) -> None:
         for (lvalid, defuse) in self.lval_defuses_high.items():
-            defuse = cast("DefUseHigh", defuse)
             addrs = [str(u) for u in defuse.uselocations if str(u) != "exit"]
             for addr in addrs:
                 if addr in self.address_instructions:
