@@ -582,7 +582,7 @@ class Cfg:
                         for succ in succs:
                             if jumptable.has_target(succ) and succ not in succlabels:
                                 cvs = jumptable.get_target(succ)
-                                def rawlabel(c):
+                                def rawlabel(c: int) -> AST.ASTCaseLabel:
                                     r = astree.mk_case_label(astree.mk_integer_constant(c))
                                     astree.add_instruction_span(r.locationid, succ, "")
                                     return r
@@ -598,7 +598,7 @@ class Cfg:
                             return ctx.in_switch(mergeaddr, mb_nextsucc)
                         return ctx
 
-                    def switch_case_stmts(succ, mb_nextsucc):
+                    def switch_case_stmts(succ: str, mb_nextsucc: Optional[str]) -> List[AST.ASTStmt]:
                         sctx = switch_case_ctx(mb_nextsucc)
                         casebody = do_branch(x, succ, sctx)
                         if casebody == [] and mb_nextsucc is None:
@@ -607,6 +607,11 @@ class Cfg:
                             # we insert a synthetic break statement to maintain
                             # syntactic compatibility.
                             casebody = [astree.mk_break_stmt()]
+                        # XXX: ASTStmtLabel from succlabels are not ASTStmts. Switching to ASTNode
+                        # still doesn't work (something something covariant, use sequence instead)
+                        # but using sequences could break this fragile code. Oddly enough we
+                        # eventually pass the ASTStmtLabel to astree.mk_block which expects
+                        # only ASTStmts.
                         return succlabels.get(succ, []) + casebody
 
                     bodystmts: List[AST.ASTStmt] = []
