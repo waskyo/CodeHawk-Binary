@@ -1412,10 +1412,11 @@ def collect_known_fn_addrs(app: "AppAccess[HeaderTy]",
                            patchcallsites: list[LibraryCallSideeffect],
                           ) -> dict[str, str]:
     function_addr: Dict[str, str] = {}
-    def consider_pair(faddr: str, fname: Optional[str]):
+    def consider_pair(faddr: str, fname: Optional[str]) -> None:
         if fname and fname not in function_addr:
             function_addr[fname] = faddr
-    def consider(faddr: str):
+
+    def consider(faddr: str) -> None:
         fname = (
             app.function_name(faddr)
             if app.has_function_name(faddr)
