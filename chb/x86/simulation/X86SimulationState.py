@@ -60,11 +60,12 @@ from chb.x86.X86OperandKind import (
 if TYPE_CHECKING:
     from chb.x86.X86Function import X86Function
     from chb.x86.X86Access import X86Access
+    from chb.app.AppAccess import HeaderTy
 
 
 class X86SimModule(SimModule):
 
-    def __init__(self, name: str, app: "X86Access", base: str, max_addr: str) -> None:
+    def __init__(self, name: str, app: "X86Access[HeaderTy]", base: str, max_addr: str) -> None:
         SimModule.__init__(self, name, app, base, max_addr)
 
 

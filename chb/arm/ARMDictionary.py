@@ -31,7 +31,7 @@ import os
 
 import xml.etree.ElementTree as ET
 
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 
 from chb.arm.ARMDictionaryRecord import armregistry
 from chb.arm.ARMMemoryOffset import ARMMemoryOffset
@@ -48,7 +48,7 @@ import chb.util.StringIndexedTable as SI
 
 if TYPE_CHECKING:
     from chb.api.InterfaceDictionary import InterfaceDictionary
-    from chb.app.AppAccess import AppAccess
+    from chb.app.AppAccess import AppAccess, HeaderTy
     from chb.app.BDictionary import BDictionary
 
 armdir = os.path.dirname(os.path.abspath(__file__))
@@ -62,9 +62,9 @@ class ARMDictionary:
 
     def __init__(
             self,
-            app: "AppAccess",
+            app: "AppAccess[HeaderTy]",
             xnode: ET.Element) -> None:
-        self._app = app
+        self._app: 'AppAccess[Any]' = app
         self.vfp_datatype_table = IT.IndexedTable("vfp-datatype-table")
         self.register_shift_table = IT.IndexedTable("register-shift-table")
         self.memory_offset_table = IT.IndexedTable("arm-memory-offset-table")
@@ -88,7 +88,7 @@ class ARMDictionary:
         self.initialize(xnode)
 
     @property
-    def app(self) -> "AppAccess":
+    def app(self) -> "AppAccess[Any]":
         return self._app
 
     @property

@@ -42,13 +42,13 @@ import chb.util.fileutil as UF
 import chb.util.IndexedTable as IT
 
 if TYPE_CHECKING:
-    from chb.app.AppAccess import AppAccess
+    from chb.app.AppAccess import AppAccess, HeaderTy
 
 
 class BCFiles:
 
-    def __init__(self, app: "AppAccess", xnode: ET.Element) -> None:
-        self._app = app
+    def __init__(self, app: "AppAccess[HeaderTy]", xnode: ET.Element) -> None:
+        self._app: 'AppAccess[Any]' = app
         self._typeinfos: List[BCTypeInfo] = []
         self._gtypes: List[BCTyp] = []
         self._gcomptags: List[BCCompInfo] = []
@@ -60,7 +60,7 @@ class BCFiles:
         self.initialize(xnode)
 
     @property
-    def app(self) -> "AppAccess":
+    def app(self) -> "AppAccess[Any]":
         return self._app
 
     @property

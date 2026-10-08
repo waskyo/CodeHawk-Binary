@@ -36,7 +36,7 @@ from chb.jsoninterface.JSONResult import JSONResult
 from chb.util.loggingutil import chklogger
 
 if TYPE_CHECKING:
-    from chb.app.AppAccess import AppAccess
+    from chb.app.AppAccess import AppAccess, HeaderTy
     from chb.elfformat.ELFProgramHeader import ELFProgramHeader
     from chb.elfformat.ELFSectionHeader import ELFSectionHeader
 
@@ -50,16 +50,16 @@ class XComparison:
             xfile1: str,
             path2: str,
             xfile2: str,
-            app1: "AppAccess",
-            app2: "AppAccess",
+            app1: "AppAccess[HeaderTy]",
+            app2: "AppAccess[HeaderTy]",
             pdfiledata: Optional[Dict[str, Any]] = None) -> None:
         self._is_thumb = is_thumb
         self._path1 = path1
         self._path2 = path2
         self._xfile1 = xfile1
         self._xfile2 = xfile2
-        self._app1 = app1
-        self._app2 = app2
+        self._app1: 'AppAccess[Any]' = app1
+        self._app2: 'AppAccess[Any]' = app2
         self._newsections: List["ELFSectionHeader"] = []
         self._newsegments: List["ELFProgramHeader"] = []
         self._missingsections: List[str] = []
@@ -98,11 +98,11 @@ class XComparison:
         return self._xfile2
 
     @property
-    def app1(self) -> "AppAccess":
+    def app1(self) -> "AppAccess[Any]":
         return self._app1
 
     @property
-    def app2(self) -> "AppAccess":
+    def app2(self) -> "AppAccess[Any]":
         return self._app2
 
     @property

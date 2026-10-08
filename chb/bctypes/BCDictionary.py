@@ -54,16 +54,16 @@ import chb.util.IndexedTable as IT
 import chb.util.StringIndexedTable as SI
 
 if TYPE_CHECKING:
-    from chb.app.AppAccess import AppAccess
+    from chb.app.AppAccess import AppAccess, HeaderTy
 
 
 class BCDictionary:
 
     def __init__(
             self,
-            app: "AppAccess",
+            app: "AppAccess[HeaderTy]",
             xnode: Optional[ET.Element]) -> None:
-        self._app = app
+        self._app: 'AppAccess[Any]' = app
         self.string_table = SI.StringIndexedTable("string-table")
         self.attrparam_table = IT.IndexedTable("attrparam-table")
         self.attributes_table = IT.IndexedTable("attributes-table")
@@ -115,7 +115,7 @@ class BCDictionary:
         self.initialize(xnode)
 
     @property
-    def app(self) -> "AppAccess":
+    def app(self) -> "AppAccess[Any]":
         return self._app
 
     # ------------------------- retrieve items by name/key ---------------------

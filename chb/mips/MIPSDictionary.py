@@ -33,7 +33,7 @@ import os
 
 import xml.etree.ElementTree as ET
 
-from typing import Callable, List, Tuple, TYPE_CHECKING
+from typing import List, TYPE_CHECKING, Any
 
 from chb.mips.MIPSDictionaryRecord import mipsregistry
 from chb.mips.MIPSOpcode import MIPSOpcode
@@ -48,6 +48,7 @@ if TYPE_CHECKING:
     from chb.api.InterfaceDictionary import InterfaceDictionary
     from chb.app.BDictionary import BDictionary
     from chb.mips.MIPSAccess import MIPSAccess
+    from chb.app.AppAccess import HeaderTy
 
 
 mipsdir = os.path.dirname(os.path.abspath(__file__))
@@ -61,9 +62,9 @@ class MIPSDictionary:
 
     def __init__(
             self,
-            app: "MIPSAccess",
+            app: "MIPSAccess[HeaderTy]",
             xnode: ET.Element) -> None:
-        self._app = app
+        self._app: 'MIPSAccess[Any]' = app
         self.opkind_table = IT.IndexedTable('mips-opkind-table')
         self.operand_table = IT.IndexedTable('mips-operand-table')
         self.opcode_table = IT.IndexedTable('mips-opcode-table')
@@ -76,7 +77,7 @@ class MIPSDictionary:
         self.initialize(xnode)
 
     @property
-    def app(self) -> "MIPSAccess":
+    def app(self) -> "MIPSAccess[Any]":
         return self._app
 
     @property

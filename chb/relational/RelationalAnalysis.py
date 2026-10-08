@@ -35,7 +35,7 @@ import chb.util.fileutil as UF
 from chb.util.loggingutil import chklogger
 
 if TYPE_CHECKING:
-    from chb.app.AppAccess import AppAccess
+    from chb.app.AppAccess import AppAccess, HeaderTy
     from chb.cmdline.PatchResults import PatchEvent
 
 
@@ -69,15 +69,15 @@ class RelationalAnalysis:
 
     def __init__(
             self,
-            app1: "AppAccess",
-            app2: "AppAccess",
+            app1: "AppAccess[HeaderTy]",
+            app2: "AppAccess[HeaderTy]",
             faddrs1: List[str] = [],
             faddrs2: List[str] = [],
             usermapping: Dict[str, str] = {},
             callees: List[str] = [],
             patchevents: Dict[str, "PatchEvent"] = {}) -> None:
-        self._app1 = app1
-        self._app2 = app2
+        self._app1: 'AppAccess[Any]' = app1
+        self._app2: 'AppAccess[Any]' = app2
         if faddrs1:
             self._faddrs1 = sorted(faddrs1)
         else:
@@ -95,11 +95,11 @@ class RelationalAnalysis:
         self._fnmd5s: Dict[str, Tuple[List[str], List[str]]] = {}
 
     @property
-    def app1(self) -> "AppAccess":
+    def app1(self) -> "AppAccess[Any]":
         return self._app1
 
     @property
-    def app2(self) -> "AppAccess":
+    def app2(self) -> "AppAccess[Any]":
         return self._app2
 
     @property

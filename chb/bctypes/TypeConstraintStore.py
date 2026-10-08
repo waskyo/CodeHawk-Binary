@@ -26,7 +26,7 @@
 # ------------------------------------------------------------------------------
 import xml.etree.ElementTree as ET
 
-from typing import cast, Dict, List, Optional, Set, TYPE_CHECKING
+from typing import cast, Dict, List, Optional, Set, TYPE_CHECKING, Any
 
 import chb.bctypes.TypeConstraint as TC
 
@@ -283,15 +283,15 @@ class TypeConstraintStore:
     for a single function (the latest processed).
     """
 
-    def __init__(self, app: "AppAccess") -> None:
-        self._app = app
+    def __init__(self, app: "AppAccess[HeaderTy]") -> None:
+        self._app: 'AppAccess[Any]' = app
         self._constraints: Optional[List[TC.TypeConstraint]] = None
         self._functionconstraints: Dict[str, FunctionTypeConstraints] = {}
         self._functionregconstraints: Dict[str, FunctionRegisterConstraints] = {}
         self._rules_applied: Optional[Dict[str, Dict[str, List[TypingRule]]]] = None
 
     @property
-    def app(self) -> "AppAccess":
+    def app(self) -> "AppAccess[Any]":
         return self._app
 
     @property

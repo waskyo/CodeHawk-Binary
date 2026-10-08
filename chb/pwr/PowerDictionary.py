@@ -31,7 +31,7 @@ import os
 
 import xml.etree.ElementTree as ET
 
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 
 from chb.pwr.PowerDictionaryRecord import pwrregistry
 from chb.pwr.PowerOpcode import PowerOpcode
@@ -44,7 +44,7 @@ import chb.util.StringIndexedTable as SI
 
 if TYPE_CHECKING:
     from chb.api.InterfaceDictionary import InterfaceDictionary
-    from chb.app.AppAccess import AppAccess
+    from chb.app.AppAccess import AppAccess, HeaderTy
     from chb.app.BDictionary import BDictionary
 
 pwrdir = os.path.dirname(os.path.abspath(__file__))
@@ -56,8 +56,8 @@ for f in os.listdir(opcodes):
 
 class PowerDictionary:
 
-    def __init__(self, app: "AppAccess", xnode: ET.Element) -> None:
-        self._app = app
+    def __init__(self, app: "AppAccess[HeaderTy]", xnode: ET.Element) -> None:
+        self._app: 'AppAccess[Any]' = app
         self.opkind_table = IT.IndexedTable("pwr-opkind-table")
         self.operand_table = IT.IndexedTable("pwr-operand-table")
         self.opcode_table = IT.IndexedTable("pwr-opcode-table")
@@ -70,7 +70,7 @@ class PowerDictionary:
         self._initialize(xnode)
 
     @property
-    def app(self) -> "AppAccess":
+    def app(self) -> "AppAccess[Any]":
         return self._app
 
     @property

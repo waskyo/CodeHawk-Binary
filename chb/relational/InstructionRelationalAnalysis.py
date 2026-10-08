@@ -32,7 +32,7 @@ from chb.jsoninterface.JSONResult import JSONResult
 import chb.util.fileutil as UF
 
 if TYPE_CHECKING:
-    from chb.app.AppAccess import AppAccess
+    from chb.app.AppAccess import AppAccess, HeaderTy
     from chb.app.FnProofObligations import ProofObligation
     from chb.app.Instruction import Instruction
 
@@ -41,21 +41,21 @@ class InstructionRelationalAnalysis:
 
     def __init__(
             self,
-            app1: "AppAccess",
+            app1: "AppAccess[HeaderTy]",
             i1: "Instruction",
-            app2: "AppAccess",
+            app2: "AppAccess[HeaderTy]",
             i2: Optional["Instruction"]) -> None:
-        self._app1 = app1
-        self._app2 = app2
+        self._app1: 'AppAccess[Any]' = app1
+        self._app2: 'AppAccess[Any]' = app2
         self._instr1 = i1
         self._instr2 = i2
 
     @property
-    def app1(self) -> "AppAccess":
+    def app1(self) -> "AppAccess[Any]":
         return self._app1
 
     @property
-    def app2(self) -> "AppAccess":
+    def app2(self) -> "AppAccess[Any]":
         return self._app2
 
     @property

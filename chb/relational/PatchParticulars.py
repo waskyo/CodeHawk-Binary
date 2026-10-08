@@ -109,7 +109,7 @@ import chb.util.fileutil as UF
 from chb.util.loggingutil import chklogger
 
 if TYPE_CHECKING:
-    from chb.app.AppAccess import AppAccess
+    from chb.app.AppAccess import AppAccess, HeaderTy
     from chb.app.Function import Function
     from chb.app.Instruction import Instruction
     from chb.cmdline.PatchResults import PatchResults, PatchEvent, PatchWrapper
@@ -374,11 +374,11 @@ class PatchParticulars:
     def __init__(
             self,
             patchresults: "PatchResults",
-            app1: "AppAccess",
-            app2: "AppAccess") -> None:
+            app1: "AppAccess[HeaderTy]",
+            app2: "AppAccess[HeaderTy]") -> None:
         self._patchresults = patchresults
-        self._app1 = app1
-        self._app2 = app2
+        self._app1: 'AppAccess[Any]' = app1
+        self._app2: 'AppAccess[Any]' = app2
         self._events: Optional[Dict[str, "PatchEvent"]] = None
 
     @property
@@ -386,11 +386,11 @@ class PatchParticulars:
         return self._patchresults
 
     @property
-    def app1(self) -> "AppAccess":
+    def app1(self) -> "AppAccess[Any]":
         return self._app1
 
     @property
-    def app2(self) -> "AppAccess":
+    def app2(self) -> "AppAccess[Any]":
         return self._app2
 
     @property

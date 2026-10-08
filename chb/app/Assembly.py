@@ -31,10 +31,10 @@
 import xml.etree.ElementTree as ET
 
 from abc import ABC, abstractmethod
-from typing import Dict, List, Mapping, Optional, Sequence, TYPE_CHECKING
+from typing import Dict, List, Mapping, Sequence, TYPE_CHECKING, Any
 
 if TYPE_CHECKING:
-    from chb.app.AppAccess import AppAccess
+    from chb.app.AppAccess import AppAccess, HeaderTy
     from chb.app.Instruction import Instruction
 
 
@@ -68,8 +68,8 @@ class AssemblyInstruction(ABC):
 
 class Assembly(ABC):
 
-    def __init__(self, app: "AppAccess", xnode: ET.Element) -> None:
-        self._app = app
+    def __init__(self, app: "AppAccess[HeaderTy]", xnode: ET.Element) -> None:
+        self._app: 'AppAccess[Any]' = app
         self.xnode = xnode
 
     @property

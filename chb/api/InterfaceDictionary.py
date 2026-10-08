@@ -30,7 +30,7 @@
 
 import xml.etree.ElementTree as ET
 
-from typing import List, TYPE_CHECKING
+from typing import List, TYPE_CHECKING, Any
 
 from chb.api.BTerm import BTerm
 from chb.api.FormatStringSpec import FormatStringSpec, FormatArgSpec
@@ -51,7 +51,7 @@ import chb.util.IndexedTable as IT
 import chb.util.fileutil as UF
 
 if TYPE_CHECKING:
-    from chb.app.AppAccess import AppAccess
+    from chb.app.AppAccess import AppAccess, HeaderTy
     from chb.app.BDictionary import BDictionary
     from chb.bctypes.BCDictionary import BCDictionary
 
@@ -60,9 +60,9 @@ class InterfaceDictionary:
 
     def __init__(
             self,
-            app: "AppAccess",
+            app: "AppAccess[HeaderTy]",
             xnode: ET.Element) -> None:
-        self._app = app
+        self._app: 'AppAccess[Any]' = app
         self.formatarg_spec_table = IT.IndexedTable("formatarg-spec-table")
         self.formatstring_spec_table = IT.IndexedTable("formatstring-spec-table")
         self.function_stub_table = IT.IndexedTable("function-stub-table")
@@ -101,7 +101,7 @@ class InterfaceDictionary:
         self.initialize(xnode)
 
     @property
-    def app(self) -> "AppAccess":
+    def app(self) -> "AppAccess[Any]":
         return self._app
 
     @property

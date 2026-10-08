@@ -46,10 +46,10 @@ import chb.util.fileutil as UF
 import chb.util.IndexedTable as IT
 import chb.util.StringIndexedTable as SI
 
-from typing import Callable, List, Optional, Tuple, TYPE_CHECKING
+from typing import Callable, List, Optional, Tuple, TYPE_CHECKING, Any
 
 if TYPE_CHECKING:
-    from chb.app.AppAccess import AppAccess
+    from chb.app.AppAccess import AppAccess, HeaderTy
 
 
 class AsmAddress(IT.IndexedTableValue):
@@ -72,9 +72,9 @@ class BDictionary:
 
     def __init__(
             self,
-            app: "AppAccess",
+            app: "AppAccess[HeaderTy]",
             xnode: ET.Element) -> None:
-        self._app = app
+        self._app: 'AppAccess[Any]' = app
         self.string_table = SI.StringIndexedTable('string-table')
         self.address_table = IT.IndexedTable('address-table')
         self.arm_extension_register_table = IT.IndexedTable(
@@ -95,7 +95,7 @@ class BDictionary:
         self.initialize(xnode)
 
     @property
-    def app(self) -> "AppAccess":
+    def app(self) -> "AppAccess[Any]":
         return self._app
 
     # -------------- Retrieve items from dictionary tables ---------------------

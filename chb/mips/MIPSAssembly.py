@@ -30,7 +30,7 @@
 
 import xml.etree.ElementTree as ET
 
-from typing import cast, Dict, List, Mapping, Optional, TYPE_CHECKING
+from typing import cast, Dict, List, Mapping, Optional, TYPE_CHECKING, Any
 
 from chb.app.Assembly import Assembly, AssemblyInstruction
 from chb.mips.MIPSOpcode import MIPSOpcode
@@ -44,6 +44,7 @@ if TYPE_CHECKING:
     from chb.mips.MIPSAccess import MIPSAccess
     from chb.mips.opcodes.MIPSJumpLinkRegister import MIPSJumpLinkRegister
     from chb.simulation.SimulationState import SimulationState
+    from chb.app.AppAccess import HeaderTy
 
 
 class MIPSAssemblyInstruction(AssemblyInstruction):
@@ -152,7 +153,7 @@ class MIPSAssembly(Assembly):
 
     def __init__(
             self,
-            app: "MIPSAccess",
+            app: "MIPSAccess[HeaderTy]",
             xnode: ET.Element) -> None:
         Assembly.__init__(self, app, xnode)
         self._sorted_instructions: List[int] = []  # list of integer addresses
@@ -161,8 +162,8 @@ class MIPSAssembly(Assembly):
         self._instructions: Dict[str, MIPSAssemblyInstruction] = {}
 
     @property
-    def app(self) -> "MIPSAccess":
-        return cast("MIPSAccess", self._app)
+    def app(self) -> "MIPSAccess[Any]":
+        return cast("MIPSAccess[Any]", self._app)
 
     @property
     def instructions(self) -> Mapping[str, MIPSAssemblyInstruction]:

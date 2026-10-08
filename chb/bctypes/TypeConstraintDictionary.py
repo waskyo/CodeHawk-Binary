@@ -27,7 +27,7 @@
 
 import xml.etree.ElementTree as ET
 
-from typing import List, Optional, TYPE_CHECKING
+from typing import List, Optional, TYPE_CHECKING, Any
 
 import chb.bctypes.TypeConstraint as TC
 from chb.bctypes.TypeConstraintDictionaryRecord import tcdregistry
@@ -36,14 +36,14 @@ import chb.util.IndexedTable as IT
 import chb.util.fileutil as UF
 
 if TYPE_CHECKING:
-    from chb.app.AppAccess import AppAccess
+    from chb.app.AppAccess import AppAccess, HeaderTy
     from chb.app.BDictionary import BDictionary
 
 
 class TypeConstraintDictionary:
 
-    def __init__(self, app: "AppAccess", xnode: Optional[ET.Element]) -> None:
-        self._app = app
+    def __init__(self, app: "AppAccess[HeaderTy]", xnode: Optional[ET.Element]) -> None:
+        self._app: 'AppAccess[Any]' = app
         self.type_basevar_table = IT.IndexedTable("type-base-variable")
         self.type_caplabel_table = IT.IndexedTable("type-cap-label-table")
         self.type_variable_table = IT.IndexedTable("type-variable-table")
@@ -62,7 +62,7 @@ class TypeConstraintDictionary:
         self._initialize(xnode)
 
     @property
-    def app(self) -> "AppAccess":
+    def app(self) -> "AppAccess[Any]":
         return self._app
 
     @property

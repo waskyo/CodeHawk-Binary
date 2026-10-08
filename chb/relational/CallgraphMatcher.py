@@ -26,12 +26,12 @@
 # ------------------------------------------------------------------------------
 """Creates a mapping of functions between two executables."""
 
-from typing import Dict, List, Mapping, Sequence, Set, Tuple, TYPE_CHECKING
+from typing import Dict, List, Sequence, Tuple, TYPE_CHECKING, Any
 
 import chb.util.fileutil as UF
 
 if TYPE_CHECKING:
-    from chb.app.AppAccess import AppAccess
+    from chb.app.AppAccess import AppAccess, HeaderTy
     from chb.app.BasicBlock import BasicBlock
     from chb.app.Callgraph import Callgraph
     from chb.app.Function import Function
@@ -41,15 +41,15 @@ class CallgraphMatcher:
 
     def __init__(
             self,
-            app1: "AppAccess",
+            app1: "AppAccess[HeaderTy]",
             faddrs1: Sequence[str],
             callgraph1: "Callgraph",
-            app2: "AppAccess",
+            app2: "AppAccess[HeaderTy]",
             faddrs2: Sequence[str],
             callgraph2: "Callgraph",
             usermapping: Dict[str, str] = {}) -> None:
-        self._app1 = app1
-        self._app2 = app2
+        self._app1: 'AppAccess[Any]' = app1
+        self._app2: 'AppAccess[Any]' = app2
         self._faddrs1 = faddrs1
         self._faddrs2 = faddrs2
         self._callgraph1 = callgraph1
@@ -61,11 +61,11 @@ class CallgraphMatcher:
         self.match()
 
     @property
-    def app1(self) -> "AppAccess":
+    def app1(self) -> "AppAccess[Any]":
         return self._app1
 
     @property
-    def app2(self) -> "AppAccess":
+    def app2(self) -> "AppAccess[Any]":
         return self._app2
 
     @property

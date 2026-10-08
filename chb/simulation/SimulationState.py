@@ -40,7 +40,7 @@ library functions.
 
 from abc import ABC, abstractmethod
 from typing import (
-    cast, Dict, List, Mapping, Optional, Sequence, TYPE_CHECKING, Union)
+    cast, Dict, List, Mapping, Optional, Sequence, TYPE_CHECKING, Any)
 
 from chb.app.Operand import Operand
 
@@ -65,7 +65,7 @@ import chb.simulation.SimUtil as SU
 import chb.util.fileutil as UF
 
 if TYPE_CHECKING:
-    from chb.app.AppAccess import AppAccess
+    from chb.app.AppAccess import AppAccess, HeaderTy
     from chb.elfformat.ELFSection import ELFSymbolTable
 
 
@@ -144,12 +144,12 @@ class SimModule:
     def __init__(
             self,
             name: str,
-            app: "AppAccess",
+            app: "AppAccess[HeaderTy]",
             base: str,
             max_addr: str,
             loadaddr: Optional[str] = None) -> None:
         self._name = name
-        self._app = app
+        self._app: 'AppAccess[Any]' = app
         self._base = base  # base address in hex
         self._imports: Dict[int, str] = {}
         self._exports: Dict[str, int] = {}
@@ -161,7 +161,7 @@ class SimModule:
         return self._name
 
     @property
-    def app(self) -> "AppAccess":
+    def app(self) -> "AppAccess[Any]":
         return self._app
 
     @property

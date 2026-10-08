@@ -373,7 +373,7 @@ def get_parameter_attributes_from_roles(paramroles: List[str]) -> List[str]:
 def callsite_target_function(
         xcallee: str,
         function_names: Dict[str, str],
-        app: "AppAccess",
+        app: "AppAccess[HeaderTy]",
         models: "ModelsAccess") -> CallsiteTargetFunction:
 
     targetname: Optional[str] = None
@@ -1461,7 +1461,7 @@ def compare_function_attribute(attr: BCAttribute, instr: Instruction, pc: Librar
             return (function_param, callsite_param)
     return None
 
-def find_function_attribute(app: "AppAccess", dstarg_index: int, fname: str, instr: Instruction, pc: LibraryCallSideeffect) -> Optional[Tuple[int, int]]:
+def find_function_attribute(app: "AppAccess[HeaderTy]", dstarg_index: int, fname: str, instr: Instruction, pc: LibraryCallSideeffect) -> Optional[Tuple[int, int]]:
     varinfo_index = None
     for index, v in app.bcdictionary.varinfo_table.items():
         if v.tags[0] == fname:

@@ -26,7 +26,7 @@
 # ------------------------------------------------------------------------------
 """Basis for dictionary records in the X86 dictionary."""
 
-from typing import Callable, cast, Dict, List, Tuple, Type, TypeVar, TYPE_CHECKING
+from typing import Callable, cast, Dict, Tuple, Type, TypeVar, TYPE_CHECKING, Any
 
 import chb.util.fileutil as UF
 
@@ -53,7 +53,7 @@ class X86DictionaryRecord(IndexedTableValue):
         return self._x86d
 
     @property
-    def app(self) -> "chb.x86.X86Access.X86Access":
+    def app(self) -> "chb.x86.X86Access.X86Access[Any]":
         return self.x86d.app
 
     @property

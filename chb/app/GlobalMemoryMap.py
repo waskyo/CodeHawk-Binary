@@ -27,7 +27,7 @@
 
 import xml.etree.ElementTree as ET
 
-from typing import Dict, List, Optional, Tuple, TYPE_CHECKING
+from typing import Dict, List, Optional, Tuple, TYPE_CHECKING, Any
 
 import chb.util.fileutil as UF
 from chb.util.loggingutil import chklogger
@@ -221,13 +221,13 @@ class GlobalLocation:
 
 class GlobalMemoryMap:
 
-    def __init__(self, app: "AppAccess", xnode: Optional[ET.Element]) -> None:
-        self._app = app
+    def __init__(self, app: "AppAccess[HeaderTy]", xnode: Optional[ET.Element]) -> None:
+        self._app: 'AppAccess[Any]' = app
         self._xnode = xnode
         self._locations: Optional[Dict[str, GlobalLocation]] = None
 
     @property
-    def app(self) -> "AppAccess":
+    def app(self) -> "AppAccess[Any]":
         return self._app
 
     @property

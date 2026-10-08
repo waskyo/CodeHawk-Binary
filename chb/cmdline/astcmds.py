@@ -35,7 +35,6 @@ import os
 from typing import (
     Any, cast, Dict, List, NoReturn, Optional, Set, Tuple, TYPE_CHECKING)
 
-from chb.app.AppAccess import AppAccess
 from chb.app.Function import Function
 
 from chb.ast.AbstractSyntaxTree import AbstractSyntaxTree
@@ -70,6 +69,7 @@ from chb.util.loggingutil import chklogger, LogLevel
 
 
 if TYPE_CHECKING:
+    from chb.app.AppAccess import AppAccess, HeaderTy
     from chb.api.AppFunctionSignature import AppFunctionSignature
     from chb.bctypes.BCCompInfo import BCCompInfo
     from chb.bctypes.BCTyp import BCTypComp
@@ -124,7 +124,7 @@ def reduce_ast_nodes(
     return result
 
 
-def library_call_targets(app: AppAccess, faddrs: List[str]) -> List[str]:
+def library_call_targets(app: 'AppAccess[HeaderTy]', faddrs: List[str]) -> List[str]:
     """Return a list of names of dynamically loaded library functions used."""
 
     result: Set[str] = set([])
@@ -459,7 +459,7 @@ def buildast(args: argparse.Namespace) -> NoReturn:
 
 
 def print_reachingdefs(
-        app: AppAccess,
+        app: 'AppAccess[HeaderTy]',
         astinterface: ASTInterface,
         filename: str,
         fileformat: str,

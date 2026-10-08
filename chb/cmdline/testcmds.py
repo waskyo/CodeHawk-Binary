@@ -164,7 +164,7 @@ def test_arm_opcodes(args: argparse.Namespace) -> NoReturn:
     xinfo = XI.XInfo()
     xinfo.load(path, filename)
 
-    app = cast("ARMAccess", UC.get_app(path, filename, xinfo))
+    app = cast("ARMAccess[Any]", UC.get_app(path, filename, xinfo))
     armd = app.armdictionary
 
     print("Checking " + str(armd.opcode_table.size()) + " opcodes")

@@ -33,7 +33,7 @@ import os
 
 import xml.etree.ElementTree as ET
 
-from typing import Callable, List, Tuple, TYPE_CHECKING
+from typing import List, TYPE_CHECKING, Any
 
 import chb.util.fileutil as UF
 import chb.util.IndexedTable as IT
@@ -49,6 +49,7 @@ if TYPE_CHECKING:
     import chb.api.InterfaceDictionary
     import chb.app.BDictionary
     import chb.x86.X86Access
+    from chb.app.AppAccess import HeaderTy
 
 x86dir = os.path.dirname(os.path.abspath(__file__))
 opcodes = os.path.join(x86dir, "opcodes")
@@ -60,9 +61,9 @@ for f in os.listdir(opcodes):
 class X86Dictionary:
 
     def __init__(self,
-                 app: "chb.x86.X86Access.X86Access",
+                 app: "chb.x86.X86Access.X86Access[HeaderTy]",
                  xnode: ET.Element) -> None:
-        self._app = app
+        self._app: 'chb.x86.X86Access.X86Access[Any]' = app
         self.opkind_table = IT.IndexedTable('opkind-table')
         self.operand_table = IT.IndexedTable('operand-table')
         self.opcode_table = IT.IndexedTable('opcode-table')
@@ -80,7 +81,7 @@ class X86Dictionary:
         self.initialize(xnode)
 
     @property
-    def app(self) -> "chb.x86.X86Access.X86Access":
+    def app(self) -> "chb.x86.X86Access.X86Access[Any]":
         return self._app
 
     @property

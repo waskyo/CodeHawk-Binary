@@ -60,15 +60,16 @@ if TYPE_CHECKING:
     from chb.arm.ARMAssembly import ARMAssembly
     from chb.mips.MIPSAccess import MIPSAccess
     from chb.mips.MIPSAssembly import MIPSAssembly
+    from chb.elfformat.ELFHeader import ELFHeader
 
 
 def simulate_mips_function(
         xname: str,
-        app: "MIPSAccess",
+        app: "MIPSAccess[ELFHeader]",
         asm: "MIPSAssembly",
         faddr: str,
         stepcount: int = 100,
-        libs: Dict[str, Tuple["MIPSAccess", "MIPSAssembly"]] = {},
+        libs: Dict[str, Tuple["MIPSAccess[ELFHeader]", "MIPSAssembly"]] = {},
         support: Optional[str] = None,
         stub_imports: List[str] = [],
         mainargs: List[str] = [],
@@ -375,7 +376,7 @@ def simulate_mips_function(
 
 def simulate_arm_function(
         xname: str,
-        app: "ARMAccess",
+        app: "ARMAccess[ELFHeader]",
         asm: "ARMAssembly",
         faddr: str) -> NoReturn:
     base = app.header.image_base
@@ -399,7 +400,7 @@ def unpack_named_strings(l: List[str]) -> Dict[str, str]:
     return result
 
 
-def load_mips_lib_file(libxname: str) -> Tuple["MIPSAccess", "MIPSAssembly"]:
+def load_mips_lib_file(libxname: str) -> Tuple["MIPSAccess[ELFHeader]", "MIPSAssembly"]:
     try:
         (libpath, libxfile) = UC.get_path_filename(libxname)
         UF.check_analysis_results(libpath, libxfile)
@@ -410,7 +411,7 @@ def load_mips_lib_file(libxname: str) -> Tuple["MIPSAccess", "MIPSAssembly"]:
     libxinfo = XI.XInfo()
     libxinfo.load(libpath, libxfile)
 
-    libapp = cast("MIPSAccess", UC.get_app(libpath, libxfile, libxinfo))
+    libapp = cast("MIPSAccess[ELFHeader]", UC.get_app(libpath, libxfile, libxinfo))
     libasm = cast("MIPSAssembly", UC.get_asm(libapp))
 
     return (libapp, libasm)
@@ -443,7 +444,7 @@ def simulate_function_cmd(args: argparse.Namespace) -> NoReturn:
         exit(1)
 
     libnames = unpack_named_strings(libs)
-    libapps: Dict[str, Tuple["MIPSAccess", "MIPSAssembly"]] = {}
+    libapps: Dict[str, Tuple["MIPSAccess[ELFHeader]", "MIPSAssembly"]] = {}
     for (name, libxname) in libnames.items():
         libapps[name] = load_mips_lib_file(libxname)
 
@@ -456,7 +457,7 @@ def simulate_function_cmd(args: argparse.Namespace) -> NoReturn:
     asm = UC.get_asm(app)
 
     if xinfo.is_mips:
-        app = cast("MIPSAccess", app)
+        app = cast("MIPSAccess[ELFHeader]", app)
         asm = cast("MIPSAssembly", asm)
         simulate_mips_function(
             xname,
@@ -476,7 +477,7 @@ def simulate_function_cmd(args: argparse.Namespace) -> NoReturn:
             envptr_addr=envptr_addr)
 
     elif xinfo.is_arm:
-        app = cast("ARMAccess", app)
+        app = cast("ARMAccess[ELFHeader]", app)
         asm = cast("ARMAssembly", asm)
         simulate_arm_function(xname, app, asm, faddr)
 

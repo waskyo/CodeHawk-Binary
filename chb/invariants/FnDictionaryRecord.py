@@ -35,7 +35,7 @@ from chb.util.IndexedTable import IndexedTableValue
 
 if TYPE_CHECKING:
     from chb.api.InterfaceDictionary import InterfaceDictionary
-    import chb.app.AppAccess
+    from chb.app.AppAccess import AppAccess, HeaderTy
     from chb.app.BDictionary import BDictionary
     from chb.app.Function import Function
     from chb.app.FunctionInfo import FunctionInfo
@@ -74,7 +74,7 @@ class FnXprDictionaryRecord(IndexedTableValue):
         return self.vd.bd
 
     @property
-    def app(self) -> "chb.app.AppAccess.AppAccess":
+    def app(self) -> "AppAccess[HeaderTy]":
         return self.bd.app
 
     @property

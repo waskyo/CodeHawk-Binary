@@ -26,7 +26,7 @@
 # ------------------------------------------------------------------------------
 """Creates a mapping of basic blocks and edges between two executables."""
 
-from typing import Dict, List, Mapping, Optional, Set, Tuple, TYPE_CHECKING
+from typing import Dict, List, Mapping, Set, Tuple, TYPE_CHECKING, Any
 
 from chb.graphics.DotCfg import DotCfg
 
@@ -35,7 +35,7 @@ from chb.util.loggingutil import chklogger
 
 
 if TYPE_CHECKING:
-    from chb.app.AppAccess import AppAccess
+    from chb.app.AppAccess import AppAccess, HeaderTy
     from chb.app.BasicBlock import BasicBlock
     from chb.app.Cfg import Cfg
     from chb.app.Function import Function
@@ -45,16 +45,16 @@ class CfgMatcher:
 
     def __init__(
             self,
-            app1: "AppAccess",
+            app1: "AppAccess[HeaderTy]",
             fn1: "Function",
             cfg1: "Cfg",
-            app2: "AppAccess",
+            app2: "AppAccess[HeaderTy]",
             fn2: "Function",
             cfg2: "Cfg",
             blockmapping: Dict[str, str] = {},
             edgemapping: Dict[Tuple[str, str], Tuple[str, str]] = {}) -> None:
-        self._app1 = app1
-        self._app2 = app2
+        self._app1: 'AppAccess[Any]' = app1
+        self._app2: 'AppAccess[Any]' = app2
         self._fn1 = fn1
         self._fn2 = fn2
         self._cfg1 = cfg1
@@ -75,11 +75,11 @@ class CfgMatcher:
         self.match()
 
     @property
-    def app1(self) -> "AppAccess":
+    def app1(self) -> "AppAccess[Any]":
         return self._app1
 
     @property
-    def app2(self) -> "AppAccess":
+    def app2(self) -> "AppAccess[Any]":
         return self._app2
 
     @property

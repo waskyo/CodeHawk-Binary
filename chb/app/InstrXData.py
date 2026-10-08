@@ -26,7 +26,7 @@
 # ------------------------------------------------------------------------------
 """Provides access to invariants for instruction operands."""
 
-from typing import cast, List, Optional, Tuple, Sequence, TYPE_CHECKING, Union
+from typing import cast, List, Optional, Tuple, Sequence, TYPE_CHECKING, Any
 
 from chb.app.BDictionary import BDictionary, AsmAddress
 
@@ -98,7 +98,7 @@ class InstrXData(IndexedTableValue):
         return self.functiondictionary.function
 
     @property
-    def app(self) -> "AppAccess[HeaderTy]":
+    def app(self) -> "AppAccess[Any]":
         return self.function.app
 
     @property

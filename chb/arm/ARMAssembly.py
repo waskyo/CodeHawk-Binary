@@ -30,7 +30,7 @@
 
 import xml.etree.ElementTree as ET
 
-from typing import cast, Dict, List, Mapping, Optional, TYPE_CHECKING
+from typing import cast, Dict, List, Mapping, TYPE_CHECKING, Any
 
 from chb.app.Assembly import Assembly, AssemblyInstruction
 from chb.arm.ARMOpcode import ARMOpcode
@@ -44,6 +44,7 @@ if TYPE_CHECKING:
     from chb.arm.ARMAccess import ARMAccess
     from chb.arm.opcodes.ARMNotRecognized import ARMNotRecognized
     from chb.simulation.SimulationState import SimulationState
+    from chb.app.AppAccess import HeaderTy
 
 
 class ARMAssemblyInstruction(AssemblyInstruction):
@@ -110,7 +111,7 @@ class ARMAssembly(Assembly):
 
     def __init__(
             self,
-            app: "ARMAccess",
+            app: "ARMAccess[HeaderTy]",
             xnode: ET.Element) -> None:
         Assembly.__init__(self, app, xnode)
         self.sorted_instructions: List[int] = []  # list of integer addresses
@@ -119,8 +120,8 @@ class ARMAssembly(Assembly):
         self._instructions: Dict[str, ARMAssemblyInstruction] = {}
 
     @property
-    def app(self) -> "ARMAccess":
-        return cast("ARMAccess", self._app)
+    def app(self) -> "ARMAccess[Any]":
+        return cast("ARMAccess[Any]", self._app)
 
     @property
     def instructions(self) -> Mapping[str, ARMAssemblyInstruction]:

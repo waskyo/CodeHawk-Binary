@@ -37,7 +37,7 @@ import chb.util.fileutil as UF
 from chb.util.loggingutil import chklogger
 
 if TYPE_CHECKING:
-    from chb.app.AppAccess import AppAccess
+    from chb.app.AppAccess import AppAccess, HeaderTy
     from chb.app.BasicBlock import BasicBlock
     from chb.app.Instruction import Instruction
 
@@ -46,12 +46,12 @@ class BlockRelationalAnalysis:
 
     def __init__(
             self,
-            app1: "AppAccess",
+            app1: "AppAccess[HeaderTy]",
             b1: "BasicBlock",
-            app2: "AppAccess",
+            app2: "AppAccess[HeaderTy]",
             b2map: Dict[str, "BasicBlock"]) -> None:
-        self._app1 = app1
-        self._app2 = app2
+        self._app1: 'AppAccess[Any]' = app1
+        self._app2: 'AppAccess[Any]' = app2
         self._b1 = b1
         self._b2map = b2map
         self._distance: int = -1
@@ -61,11 +61,11 @@ class BlockRelationalAnalysis:
         self._instrbytes: Dict[str, Tuple[List[str], List[str]]] = {}
 
     @property
-    def app1(self) -> "AppAccess":
+    def app1(self) -> "AppAccess[Any]":
         return self._app1
 
     @property
-    def app2(self) -> "AppAccess":
+    def app2(self) -> "AppAccess[Any]":
         return self._app2
 
     @property

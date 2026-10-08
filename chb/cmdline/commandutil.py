@@ -57,7 +57,7 @@ from typing import (
 
 import xml.etree.ElementTree as ET
 
-from chb.app.AppAccess import AppAccess
+from chb.app.AppAccess import AppAccess, HeaderTy
 from chb.app.Assembly import Assembly
 
 from chb.app.Callgraph import CallgraphNode
@@ -174,7 +174,7 @@ def get_format(name: str) -> Union[Type[PEHeader], Type[ELFHeader]]:
     raise ValueError("Unknown format name: %s" % name)
 
 
-def get_app(path: str, xfile: str, xinfo: XI.XInfo) -> AppAccess:
+def get_app(path: str, xfile: str, xinfo: XI.XInfo) -> AppAccess[Any]:
     arch = xinfo.architecture
     format = get_format(xinfo.format)
     if arch == "x86":
@@ -190,7 +190,7 @@ def get_app(path: str, xfile: str, xinfo: XI.XInfo) -> AppAccess:
         # raise UF.CHBError("Archicture " + arch + " not yet supported")
 
 
-def get_asm(app: AppAccess) -> Assembly:
+def get_asm(app: AppAccess[HeaderTy]) -> Assembly:
     if isinstance(app, MIPSAccess):
         return MIPSAssembly(app, UF.get_mips_asm_xnode(app.path, app.filename))
     elif isinstance(app, ARMAccess):
